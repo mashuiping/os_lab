@@ -4,7 +4,7 @@
 # The BIOS loads this code from the first sector of the hard disk into
 # memory at physical address 0x7c00 and starts executing in real mode
 # with %cs=0 %ip=7c00.
-
+# Todo: why 0x8 0x10 ?????
 .set PROT_MODE_CSEG,        0x8                     # kernel code segment selector
 .set PROT_MODE_DSEG,        0x10                    # kernel data segment selector
 .set CR0_PE_ON,             0x1                     # protected mode enable flag
@@ -27,6 +27,11 @@ start:
     #  address line 20 is tied low, so that addresses higher than
     #  1MB wrap around to zero by default. This code undoes this.
 seta20.1:
+	# $0x64 -> %al
+	# 64h is a status register
+	# test: http://blog.csdn.net/thanklife/article/details/11067731
+	# test if the second bit of 0x64 is 1
+	# 1 means that input register has data
     inb $0x64, %al                                  # Wait for not busy(8042 input buffer empty).
     testb $0x2, %al
     jnz seta20.1
